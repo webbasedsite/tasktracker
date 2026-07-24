@@ -1,0 +1,274 @@
+/* ==================================
+   Task Tracker Admin Dashboard CSS
+================================== */
+
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+
+body{
+
+    background:#f4f7fb;
+
+}
+
+
+/* Navbar */
+
+.navbar{
+
+    height:70px;
+
+}
+
+
+.navbar h4{
+
+    color:#1f2937;
+
+}
+
+
+
+/* Common Card */
+
+.card{
+
+    border:none;
+    border-radius:18px;
+    box-shadow:0 8px 25px rgba(0,0,0,.06);
+
+}
+
+
+
+/* Summary Cards */
+
+
+.admin-card{
+
+    color:white;
+    transition:.3s;
+
+}
+
+
+
+.admin-card:hover{
+
+    transform:translateY(-5px);
+
+}
+
+
+
+.admin-card .card-body{
+
+    padding:25px;
+
+}
+
+
+
+.admin-card h6{
+
+    font-size:15px;
+    opacity:.9;
+
+}
+
+
+
+.admin-card h2{
+
+    margin-top:12px;
+    font-size:36px;
+    font-weight:700;
+
+}
+
+
+
+/* Card Colors */
+
+
+.blue{
+
+    background:
+    linear-gradient(135deg,#2563eb,#3b82f6);
+
+}
+
+
+
+.green{
+
+    background:
+    linear-gradient(135deg,#16a34a,#22c55e);
+
+}
+
+
+
+.orange{
+
+    background:
+    linear-gradient(135deg,#f59e0b,#fbbf24);
+
+}
+
+
+
+.red{
+
+    background:
+    linear-gradient(135deg,#dc2626,#ef4444);
+
+}
+
+
+
+
+/* Card Header */
+
+
+.card-header{
+
+    background:white;
+    border:none;
+    padding:18px 22px;
+    border-radius:18px 18px 0 0 !important;
+
+}
+
+
+
+/* Tables */
+
+
+.table{
+
+    margin-bottom:0;
+
+}
+
+
+
+.table thead{
+
+    background:#2563eb;
+    color:white;
+
+}
+
+
+
+.table thead th{
+
+    padding:15px;
+    border:none;
+
+}
+
+
+
+.table tbody td{
+
+    padding:15px;
+    vertical-align:middle;
+
+}
+
+
+
+.table tbody tr:hover{
+
+    background:#f8fbff;
+
+}
+
+
+
+/* Score Badge */
+
+
+.score{
+
+    background:#dcfce7;
+    color:#15803d;
+    padding:6px 12px;
+    border-radius:20px;
+    font-weight:600;
+    font-size:13px;
+
+}
+
+
+
+
+/* Activity List */
+
+
+.list-group-item{
+
+    padding:18px 22px;
+    border:none;
+    border-bottom:1px solid #eee;
+
+}
+
+
+
+.list-group-item:last-child{
+
+    border-bottom:none;
+
+}
+
+
+
+/* Logout */
+
+
+#adminLogout{
+
+    border-radius:8px;
+
+}
+
+
+
+
+/* Mobile Responsive */
+
+
+@media(max-width:768px){
+
+
+    .admin-card h2{
+
+        font-size:28px;
+
+    }
+
+
+    .navbar h4{
+
+        font-size:18px;
+
+    }
+
+
+    .table{
+
+        font-size:14px;
+
+    }
+
+
+}
