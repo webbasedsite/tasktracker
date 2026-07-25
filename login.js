@@ -1,313 +1,21 @@
-// ===============================
-// Task Tracker
-// Login Script
-// Google Apps Script Connected
-// Production Version
-// ===============================
+// =======================================
+// Task Tracker Login
+// =======================================
 
 
-// Elements
+// Login Form Submit
 
-const loginForm = document.getElementById("loginForm");
-
-const userIdInput = document.getElementById("userId");
-
-const btnText = document.getElementById("btnText");
-
-const spinner = document.getElementById("loadingSpinner");
-
-const errorMessage = document.getElementById("errorMessage");
-
-const loginBtn = document.querySelector(".login-btn");
-
-
-
-// Auto Focus
-
-if(userIdInput){
-    userIdInput.focus();
-}
-
-
-
-// Login Submit
-
-loginForm.addEventListener("submit", async function(e){
-
-    e.preventDefault();
-
-
-    hideError();
-
-
-
-    const userId = userIdInput.value
-                    .trim()
-                    .toUpperCase();
-
-
-
-    if(userId === ""){
-
-        showError(
-            "Please enter User ID"
-        );
-
-        return;
-
-    }
-
-
-
-    startLoading();
-
-
-
-    try{
-
-
-        const response = await fetch(
-            API_URL,
-            {
-
-            method:"POST",
-
-            headers:{
-                "Content-Type":"text/plain;charset=utf-8"
-            },
-
-
-            body:JSON.stringify({
-
-                action:"login",
-
-                userId:userId
-
-            })
-
-        });
-
-
-
-        const data = await response.json();
-
-
-
-        if(data.success === true){
-
-
-
-            // Save Session
-
-            localStorage.setItem(
-                "userId",
-                data.userId
-            );
-
-
-            localStorage.setItem(
-                "userName",
-                data.name
-            );
-
-
-            localStorage.setItem(
-                "hub",
-                data.hub
-            );
-
-
-            localStorage.setItem(
-                "role",
-                data.role
-            );
-
-
-            localStorage.setItem(
-                "loginTime",
-                new Date().getTime()
-            );
-
-
-
-
-
-            // Redirect
-
-
-            if(data.role === "ADMIN"){
-
-                window.location.href =
-                "admin.html";
-
-            }
-
-            else{
-
-                window.location.href =
-                "employee.html";
-
-            }
-
-
-
-        }
-
-        else{
-
-
-            stopLoading();
-
-
-            showError(
-                data.message ||
-                "Invalid User ID"
-            );
-
-
-        }
-
-
-
-    }
-
-
-    catch(error){
-
-
-        console.log(error);
-
-
-        stopLoading();
-
-
-        showError(
-            "Server Connection Error"
-        );
-
-
-    }
-
-
-
-});
-
-
-
-
-
-
-// ===============================
-// Loading Start
-// ===============================
-
-
-function startLoading(){
-
-
-    loginBtn.disabled = true;
-
-
-    btnText.classList.add(
-        "d-none"
-    );
-
-
-    spinner.classList.remove(
-        "d-none"
-    );
-
-
-}
-
-
-
-
-
-// ===============================
-// Loading Stop
-// ===============================
-
-
-function stopLoading(){
-
-
-    loginBtn.disabled = false;
-
-
-    btnText.classList.remove(
-        "d-none"
-    );
-
-
-    spinner.classList.add(
-        "d-none"
-    );
-
-
-}
-
-
-
-
-
-// ===============================
-// Error Message
-// ===============================
-
-
-function showError(message){
-
-
-    errorMessage.innerHTML =
-    message;
-
-
-    errorMessage.classList.remove(
-        "d-none"
-    );
-
-
-}
-
-
-
-
-
-function hideError(){
-
-
-    errorMessage.classList.add(
-        "d-none"
-    );
-
-
-}
-
-
-
-
-
-// ===============================
-// Enter Key Login
-// ===============================
-
-
-userIdInput.addEventListener(
-"keydown",
+document
+.getElementById("loginForm")
+.addEventListener(
+"submit",
 function(e){
 
 
-    if(e.key === "Enter"){
+e.preventDefault();
 
 
-        e.preventDefault();
-
-
-        loginForm.requestSubmit();
-
-
-    }
+login();
 
 
 });
@@ -315,34 +23,243 @@ function(e){
 
 
 
+// =======================================
+// LOGIN FUNCTION
+// =======================================
 
-// ===============================
-// Auto Logout Check
-// ===============================
 
-
-const loginTime =
-localStorage.getItem("loginTime");
+function login(){
 
 
 
-if(loginTime){
+const userId =
+document
+.getElementById("userId")
+.value
+.trim();
 
 
-    const sessionTime =
-    Date.now() - Number(loginTime);
+
+const errorBox =
+document
+.getElementById("errorMessage");
 
 
 
-    // 8 Hours Session
-
-    if(sessionTime > 8 * 60 * 60 * 1000){
-
-
-        localStorage.clear();
+const btnText =
+document
+.getElementById("btnText");
 
 
-    }
+const spinner =
+document
+.getElementById("loadingSpinner");
+
+
+
+
+
+if(!userId){
+
+
+errorBox
+.classList
+.remove("d-none");
+
+
+errorBox.innerHTML =
+"Please Enter User ID";
+
+
+return;
+
+
+}
+
+
+
+
+// Loading Start
+
+
+btnText.innerHTML =
+"Checking...";
+
+
+spinner
+.classList
+.remove("d-none");
+
+
+
+
+
+fetch(
+CONFIG.API_URL,
+{
+
+
+method:"POST",
+
+
+body:JSON.stringify({
+
+action:"login",
+
+userId:userId
+
+})
+
+
+}
+
+)
+
+.then(
+response =>
+response.json()
+
+)
+
+
+.then(
+data=>{
+
+
+// Loading Stop
+
+
+btnText.innerHTML =
+`
+<i class="fa-solid fa-right-to-bracket me-2"></i>
+Login
+`;
+
+
+spinner
+.classList
+.add("d-none");
+
+
+
+
+
+if(data.success){
+
+
+
+// Save Session
+
+
+localStorage.setItem(
+"taskUser",
+JSON.stringify(data)
+);
+
+
+
+
+
+// Role Check
+
+
+if(
+
+data.role
+&&
+data.role
+.toUpperCase()
+===
+"ADMIN"
+
+){
+
+
+
+window.location.href =
+"admin.html";
+
+
+
+}
+
+else{
+
+
+
+window.location.href =
+"employee.html";
+
+
+
+}
+
+
+
+}
+
+
+
+else{
+
+
+
+errorBox
+.classList
+.remove("d-none");
+
+
+errorBox.innerHTML =
+data.message || 
+"Invalid User ID";
+
+
+
+}
+
+
+
+}
+
+)
+
+
+
+.catch(
+error=>{
+
+
+console.log(error);
+
+
+
+btnText.innerHTML =
+`
+<i class="fa-solid fa-right-to-bracket me-2"></i>
+Login
+`;
+
+
+spinner
+.classList
+.add("d-none");
+
+
+
+errorBox
+.classList
+.remove("d-none");
+
+
+errorBox.innerHTML =
+"Server Connection Error";
+
+
+
+}
+
+);
+
 
 
 }
