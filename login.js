@@ -1,9 +1,8 @@
 // =======================================
-// Task Tracker Login
+// Task Tracker Login v3.0
 // =======================================
 
 
-// Login Form Submit
 
 document
 .getElementById("loginForm")
@@ -11,14 +10,13 @@ document
 "submit",
 function(e){
 
-
 e.preventDefault();
-
 
 login();
 
-
 });
+
+
 
 
 
@@ -28,7 +26,7 @@ login();
 // =======================================
 
 
-function login(){
+async function login(){
 
 
 
@@ -49,6 +47,7 @@ document
 const btnText =
 document
 .getElementById("btnText");
+
 
 
 const spinner =
@@ -73,13 +72,10 @@ errorBox.innerHTML =
 
 return;
 
-
 }
 
 
 
-
-// Loading Start
 
 
 btnText.innerHTML =
@@ -94,12 +90,27 @@ spinner
 
 
 
-fetch(
+try{
+
+
+const response =
+await fetch(
 CONFIG.API_URL,
 {
 
 
 method:"POST",
+
+
+headers:{
+
+
+"Content-Type":
+"text/plain;charset=utf-8"
+
+
+},
+
 
 
 body:JSON.stringify({
@@ -108,25 +119,28 @@ action:"login",
 
 userId:userId
 
+
 })
 
 
 }
 
-)
-
-.then(
-response =>
-response.json()
-
-)
+);
 
 
-.then(
-data=>{
 
 
-// Loading Stop
+
+
+const data =
+await response.json();
+
+
+
+
+
+
+// Stop Loading
 
 
 btnText.innerHTML =
@@ -134,6 +148,7 @@ btnText.innerHTML =
 <i class="fa-solid fa-right-to-bracket me-2"></i>
 Login
 `;
+
 
 
 spinner
@@ -144,64 +159,75 @@ spinner
 
 
 
+
+
 if(data.success){
 
 
 
-// Save Session
+// Save User Session
 
 
 localStorage.setItem(
+
 "taskUser",
+
 JSON.stringify(data)
+
+);
+
+
+
+
+// Backward support
+
+localStorage.setItem(
+"userId",
+data.userId
+);
+
+localStorage.setItem(
+"hub",
+data.hub
 );
 
 
 
 
 
-// Role Check
+
+// Redirect
 
 
 if(
 
-data.role
-&&
-data.role
+String(data.role)
 .toUpperCase()
-===
-"ADMIN"
+==="ADMIN"
 
 ){
-
 
 
 window.location.href =
 "admin.html";
 
 
-
 }
 
 else{
-
 
 
 window.location.href =
 "employee.html";
 
 
-
 }
 
 
 
 }
-
-
 
 else{
-
 
 
 errorBox
@@ -210,23 +236,20 @@ errorBox
 
 
 errorBox.innerHTML =
-data.message || 
+data.message ||
 "Invalid User ID";
 
 
-
 }
 
 
 
 }
 
-)
 
 
+catch(error){
 
-.catch(
-error=>{
 
 
 console.log(error);
@@ -240,6 +263,7 @@ Login
 `;
 
 
+
 spinner
 .classList
 .add("d-none");
@@ -251,14 +275,13 @@ errorBox
 .remove("d-none");
 
 
+
 errorBox.innerHTML =
 "Server Connection Error";
 
 
 
 }
-
-);
 
 
 
