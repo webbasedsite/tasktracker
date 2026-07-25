@@ -28,10 +28,10 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
 <body>
 
 
+
 <!-- Navbar -->
 
 <nav class="navbar navbar-expand-lg bg-white shadow-sm">
-
 
 <div class="container-fluid">
 
@@ -43,6 +43,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
 Task Tracker
 
 </h4>
+
 
 
 
@@ -75,8 +76,8 @@ Logout
 
 </div>
 
-
 </nav>
+
 
 
 
@@ -86,11 +87,12 @@ Logout
 
 
 
+
+
 <!-- Summary Cards -->
 
 
 <div class="row g-3">
-
 
 
 <div class="col-md-4">
@@ -131,7 +133,6 @@ Logout
 
 
 
-
 <div class="col-md-4">
 
 <div class="card summary-card warning">
@@ -151,6 +152,7 @@ Logout
 
 
 </div>
+
 
 
 
@@ -184,19 +186,22 @@ Today's Progress
 
 
 
-<div class="progress mt-3"
-style="height:10px;">
+<div class="progress mt-3" style="height:10px;">
 
 
 <div
+
 id="progressBar"
+
 class="progress-bar bg-success"
+
 style="width:0%;">
 
 </div>
 
 
 </div>
+
 
 
 </div>
@@ -221,7 +226,6 @@ style="width:0%;">
 <div class="card-header d-flex justify-content-between align-items-center">
 
 
-
 <h5 class="mb-0">
 
 Today's Tasks
@@ -231,9 +235,14 @@ Today's Tasks
 
 
 
-<button 
+<!-- Employee Own Add Task -->
+
+<button
+
 class="btn btn-primary btn-sm"
+
 data-bs-toggle="modal"
+
 data-bs-target="#addTaskModal">
 
 
@@ -252,20 +261,16 @@ Add Task
 
 
 
-
 <div class="table-responsive">
 
 
-
 <table class="table table-hover align-middle">
-
 
 
 <thead>
 
 
 <tr>
-
 
 <th>#</th>
 
@@ -295,17 +300,7 @@ Add Task
 </table>
 
 
-
 </div>
-
-
-
-</div>
-
-
-
-
-
 
 
 </div>
@@ -315,24 +310,28 @@ Add Task
 
 
 
+</div>
 
 
 
-<!-- ADD TASK MODAL -->
 
 
-<div class="modal fade"
-id="addTaskModal">
 
+
+
+
+<!-- ==============================
+     ADD TASK MODAL
+=============================== -->
+
+
+<div class="modal fade" id="addTaskModal">
 
 
 <div class="modal-dialog">
 
 
-
 <div class="modal-content">
-
-
 
 
 
@@ -341,7 +340,7 @@ id="addTaskModal">
 
 <h5 class="modal-title">
 
-Add New Task
+Add Your Task
 
 </h5>
 
@@ -354,7 +353,6 @@ data-bs-dismiss="modal">
 </button>
 
 
-
 </div>
 
 
@@ -362,9 +360,8 @@ data-bs-dismiss="modal">
 
 
 
+
 <div class="modal-body">
-
-
 
 
 
@@ -378,14 +375,60 @@ Task Name
 </label>
 
 
-<input 
+<input
+
 type="text"
+
 id="newTaskName"
+
 class="form-control"
+
 placeholder="Enter Task Name">
 
 
 </div>
+
+
+
+
+
+
+<div class="mb-3">
+
+
+<label class="form-label">
+
+Task Type
+
+</label>
+
+
+<select
+
+id="newTaskType"
+
+class="form-select">
+
+
+<option value="Daily">
+
+Daily
+
+</option>
+
+
+<option value="Weekly">
+
+Weekly
+
+</option>
+
+
+</select>
+
+
+</div>
+
 
 
 
@@ -402,14 +445,16 @@ Start Time
 </label>
 
 
-<input 
+<input
+
 type="time"
+
 id="newTaskStart"
+
 class="form-control">
 
 
 </div>
-
 
 
 
@@ -426,16 +471,18 @@ Duration (Minutes)
 </label>
 
 
+<input
 
-<input 
 type="number"
+
 id="newTaskDuration"
+
 class="form-control"
+
 value="30">
 
 
 </div>
-
 
 
 
@@ -454,8 +501,10 @@ value="30">
 
 
 
-<button 
+<button
+
 class="btn btn-secondary"
+
 data-bs-dismiss="modal">
 
 Close
@@ -465,8 +514,11 @@ Close
 
 
 
-<button 
+
+<button
+
 class="btn btn-primary"
+
 onclick="addTask()">
 
 Save Task
@@ -480,7 +532,6 @@ Save Task
 
 
 
-
 </div>
 
 
@@ -495,16 +546,13 @@ Save Task
 
 
 
-
-
-
-<!-- Scripts -->
 
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 
 <script src="config.js"></script>
+
 <script src="js_employee.js"></script>
 
 
