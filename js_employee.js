@@ -3,204 +3,329 @@
 // Employee Own Task
 // ==================================
 
+
 async function addTask(){
 
 
-    const taskName =
-    document.getElementById("newTaskName")
-    .value
-    .trim();
 
+const taskName =
+document
+.getElementById("newTaskName")
+.value
+.trim();
 
-    const taskType =
-    document.getElementById("newTaskType")
-    .value;
 
 
-    const startTime =
-    document.getElementById("newTaskStart")
-    .value;
+const taskType =
+document
+.getElementById("newTaskType")
+.value;
 
 
-    const duration =
-    document.getElementById("newTaskDuration")
-    .value;
 
+const startTime =
+document
+.getElementById("newTaskStart")
+.value;
 
 
 
-    if(!taskName || !startTime || !duration){
+const duration =
+document
+.getElementById("newTaskDuration")
+.value;
 
-        alert("Please fill all fields");
 
-        return;
 
-    }
 
 
+if(
+!taskName ||
+!startTime ||
+!duration
+){
 
 
-    const userId =
-    localStorage.getItem("userId");
+alert(
+"Please fill all fields"
+);
 
 
-    const hub =
-    localStorage.getItem("hub");
+return;
 
 
+}
 
-    if(!userId){
 
-        alert("Session expired. Login again");
 
-        window.location.href="index.html";
 
-        return;
 
-    }
+// ===============================
+// Get Login Session
+// ===============================
 
 
+const session =
+JSON.parse(
+localStorage.getItem("taskUser")
+);
 
 
-    try{
 
 
-        const response =
-        await fetch(API_URL,{
+if(!session){
 
-            method:"POST",
 
-            headers:{
+alert(
+"Session expired. Login again"
+);
 
-                "Content-Type":
-                "text/plain;charset=utf-8"
 
-            },
+window.location.href =
+"index.html";
 
 
-            body:JSON.stringify({
+return;
 
-                action:"addTask",
 
-                userId:userId,
+}
 
-                hub:hub,
 
-                task:taskName,
 
-                type:taskType,
 
-                start:startTime,
 
-                duration:duration,
+const userId =
+session.userId;
 
-                createdBy:userId
 
-            })
 
+const hub =
+session.hub;
 
-        });
 
 
 
 
+try{
 
-        const data =
-        await response.json();
 
 
+const response =
+await fetch(
+CONFIG.API_URL,
+{
 
 
+method:"POST",
 
-        if(data.success){
 
+headers:{
 
-            alert("Task Added Successfully");
 
+"Content-Type":
+"text/plain;charset=utf-8"
 
 
-            const modalElement =
-            document.getElementById(
-                "addTaskModal"
-            );
+},
 
 
 
-            const modal =
-            bootstrap.Modal.getInstance(
-                modalElement
-            );
+body:
+JSON.stringify({
 
 
+action:
+"addTask",
 
-            if(modal){
 
-                modal.hide();
 
-            }
+userId:
+userId,
 
 
 
+hub:
+hub,
 
-            document.getElementById(
-                "newTaskName"
-            ).value="";
 
 
+task:
+taskName,
 
-            document.getElementById(
-                "newTaskStart"
-            ).value="";
 
 
+type:
+taskType,
 
-            document.getElementById(
-                "newTaskDuration"
-            ).value="30";
 
 
+start:
+startTime,
 
-            document.getElementById(
-                "newTaskType"
-            ).value="Daily";
 
 
+duration:
+duration,
 
 
 
-            loadTasks();
+createdBy:
+userId
 
 
 
-        }
+})
 
-        else{
 
 
-            alert(
-                data.message ||
-                "Task Add Failed"
-            );
+}
 
+);
 
-        }
 
 
 
-    }
 
-    catch(error){
 
+const data =
+await response.json();
 
-        console.error(error);
 
 
-        alert(
-            "Server Connection Error"
-        );
 
 
-    }
+if(data.success){
+
+
+
+alert(
+"Task Added Successfully"
+);
+
+
+
+
+
+// Close Modal
+
+
+const modalElement =
+document.getElementById(
+"addTaskModal"
+);
+
+
+
+if(modalElement){
+
+
+
+const modal =
+bootstrap.Modal
+.getInstance(
+modalElement
+);
+
+
+
+if(modal){
+
+modal.hide();
+
+}
+
+
+}
+
+
+
+
+
+
+// Clear Form
+
+
+document
+.getElementById(
+"newTaskName"
+)
+.value="";
+
+
+
+document
+.getElementById(
+"newTaskStart"
+)
+.value="";
+
+
+
+document
+.getElementById(
+"newTaskDuration"
+)
+.value="30";
+
+
+
+document
+.getElementById(
+"newTaskType"
+)
+.value="Daily";
+
+
+
+
+
+// Reload Tasks
+
+
+loadTasks();
+
+
+
+
+}
+
+
+
+else{
+
+
+
+alert(
+data.message ||
+"Task Add Failed"
+);
+
+
+
+}
+
+
+
+
+
+}
+
+catch(error){
+
+
+console.error(
+error
+);
+
+
+
+alert(
+"Server Connection Error"
+);
+
+
+
+}
 
 
 
