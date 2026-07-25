@@ -1,84 +1,49 @@
-// ==================================
-// Add New Task
-// Employee Own Task
-// ==================================
-
-
-async function addTask(){
+// =======================================
+// Employee Dashboard JS
+// Task Tracker v3.0
+// =======================================
 
 
 
-const taskName =
-document
-.getElementById("newTaskName")
-.value
-.trim();
-
-
-
-const taskType =
-document
-.getElementById("newTaskType")
-.value;
-
-
-
-const startTime =
-document
-.getElementById("newTaskStart")
-.value;
-
-
-
-const duration =
-document
-.getElementById("newTaskDuration")
-.value;
+let USER = null;
 
 
 
 
-
-if(
-!taskName ||
-!startTime ||
-!duration
-){
+// =======================================
+// PAGE LOAD
+// =======================================
 
 
-alert(
-"Please fill all fields"
-);
+document.addEventListener(
+"DOMContentLoaded",
+function(){
 
 
-return;
+checkSession();
 
 
-}
+});
 
 
 
 
+// =======================================
+// CHECK LOGIN SESSION
+// =======================================
 
-// ===============================
-// Get Login Session
-// ===============================
+
+function checkSession(){
 
 
-const session =
+USER =
 JSON.parse(
 localStorage.getItem("taskUser")
 );
 
 
 
-
-if(!session){
-
-
-alert(
-"Session expired. Login again"
-);
+if(!USER){
 
 
 window.location.href =
@@ -93,16 +58,67 @@ return;
 
 
 
-
-const userId =
-session.userId;
-
-
-
-const hub =
-session.hub;
+document
+.getElementById(
+"employeeName"
+)
+.innerHTML =
+USER.name;
 
 
+
+loadTasks();
+
+
+
+}
+
+
+
+
+
+
+
+// =======================================
+// LOGOUT
+// =======================================
+
+
+document
+.getElementById(
+"logoutBtn"
+)
+.addEventListener(
+"click",
+function(){
+
+
+
+localStorage.removeItem(
+"taskUser"
+);
+
+
+
+window.location.href =
+"index.html";
+
+
+
+});
+
+
+
+
+
+
+
+// =======================================
+// LOAD TASKS
+// =======================================
+
+
+async function loadTasks(){
 
 
 
@@ -119,59 +135,14 @@ CONFIG.API_URL,
 method:"POST",
 
 
-headers:{
-
-
-"Content-Type":
-"text/plain;charset=utf-8"
-
-
-},
-
-
-
 body:
 JSON.stringify({
 
-
 action:
-"addTask",
-
-
+"getTasks",
 
 userId:
-userId,
-
-
-
-hub:
-hub,
-
-
-
-task:
-taskName,
-
-
-
-type:
-taskType,
-
-
-
-start:
-startTime,
-
-
-
-duration:
-duration,
-
-
-
-createdBy:
-userId
-
+USER.userId
 
 
 })
@@ -185,11 +156,8 @@ userId
 
 
 
-
-
 const data =
 await response.json();
-
 
 
 
@@ -197,42 +165,109 @@ await response.json();
 if(data.success){
 
 
+displayTasks(
+data.tasks
+);
+
+
+}
+
+
+else{
+
 
 alert(
-"Task Added Successfully"
+data.message
 );
 
 
+}
 
 
 
-// Close Modal
+}
+
+catch(error){
 
 
-const modalElement =
+console.log(error);
+
+
+alert(
+"Server Error"
+);
+
+
+}
+
+
+
+}
+
+
+
+
+
+
+
+// =======================================
+// DISPLAY TASKS
+// =======================================
+
+
+function displayTasks(tasks){
+
+
+
+const table =
 document.getElementById(
-"addTaskModal"
+"taskTable"
 );
 
 
 
-if(modalElement){
+table.innerHTML="";
 
 
 
-const modal =
-bootstrap.Modal
-.getInstance(
-modalElement
+
+let total=0;
+
+let completed=0;
+
+let pending=0;
+
+
+
+
+if(tasks.length==0){
+
+
+
+table.innerHTML=
+`
+<tr>
+
+<td colspan="5"
+class="text-center">
+
+No Task Found
+
+</td>
+
+</tr>
+`;
+
+
+
+updateSummary(
+0,
+0,
+0
 );
 
 
-
-if(modal){
-
-modal.hide();
-
-}
+return;
 
 
 }
@@ -241,49 +276,73 @@ modal.hide();
 
 
 
-
-// Clear Form
-
-
-document
-.getElementById(
-"newTaskName"
-)
-.value="";
+tasks.forEach(
+(task,index)=>{
 
 
 
-document
-.getElementById(
-"newTaskStart"
-)
-.value="";
+total++;
 
 
 
-document
-.getElementById(
-"newTaskDuration"
-)
-.value="30";
 
+if(task.status=="Completed")
+completed++;
 
-
-document
-.getElementById(
-"newTaskType"
-)
-.value="Daily";
+else
+pending++;
 
 
 
 
 
-// Reload Tasks
+let action="";
 
 
-loadTasks();
 
+
+
+if(task.status=="Pending"){
+
+
+action =
+`
+<button 
+class="btn btn-success btn-sm"
+onclick="startTask(${task.row})">
+
+<i class="fa fa-play"></i>
+
+Start
+
+</button>
+
+`;
+
+
+
+}
+
+
+
+else if(task.status=="Running"){
+
+
+action =
+`
+<button 
+class="btn btn-primary btn-sm"
+onclick="completeTask(${task.row})">
+
+
+<i class="fa fa-check"></i>
+
+Complete
+
+
+</button>
+
+`;
 
 
 
@@ -294,10 +353,103 @@ loadTasks();
 else{
 
 
+action =
+`
+<span class="badge bg-success">
 
-alert(
-data.message ||
-"Task Add Failed"
+Done
+
+</span>
+`;
+
+
+
+}
+
+
+
+
+
+
+table.innerHTML +=
+
+
+`
+<tr>
+
+
+<td>
+${index+1}
+</td>
+
+
+<td>
+
+<b>
+${task.task}
+</b>
+
+<br>
+
+<small>
+${task.type}
+</small>
+
+</td>
+
+
+
+<td>
+
+${task.start}
+
+<br>
+
+${task.duration} min
+
+</td>
+
+
+
+<td>
+
+${statusBadge(task.status)}
+
+</td>
+
+
+
+<td>
+
+${action}
+
+</td>
+
+
+
+</tr>
+
+`;
+
+
+
+
+
+});
+
+
+
+
+
+
+updateSummary(
+
+total,
+
+completed,
+
+pending
+
 );
 
 
@@ -305,6 +457,272 @@ data.message ||
 }
 
 
+
+
+
+
+
+// =======================================
+// STATUS BADGE
+// =======================================
+
+
+function statusBadge(status){
+
+
+
+if(status=="Completed"){
+
+
+return `
+<span class="badge bg-success">
+
+Completed
+
+</span>
+`;
+
+}
+
+
+if(status=="Running"){
+
+
+return `
+<span class="badge bg-warning text-dark">
+
+Running
+
+</span>
+`;
+
+}
+
+
+return `
+<span class="badge bg-secondary">
+
+Pending
+
+</span>
+`;
+
+
+
+}
+
+
+
+
+
+
+
+// =======================================
+// SUMMARY
+// =======================================
+
+
+function updateSummary(
+total,
+completed,
+pending
+){
+
+
+
+document
+.getElementById(
+"totalTask"
+)
+.innerHTML =
+total;
+
+
+
+document
+.getElementById(
+"completedTask"
+)
+.innerHTML =
+completed;
+
+
+
+document
+.getElementById(
+"pendingTask"
+)
+.innerHTML =
+pending;
+
+
+
+
+let percent=0;
+
+
+
+if(total>0){
+
+
+percent =
+Math.round(
+(completed/total)*100
+);
+
+
+}
+
+
+
+
+document
+.getElementById(
+"progressText"
+)
+.innerHTML =
+percent+"%";
+
+
+
+document
+.getElementById(
+"progressBar"
+)
+.style.width =
+percent+"%";
+
+
+
+}
+
+
+
+
+
+
+
+// =======================================
+// START TASK
+// =======================================
+
+
+async function startTask(row){
+
+
+
+await updateTask(
+"startTask",
+row
+);
+
+
+
+}
+
+
+
+
+
+
+
+// =======================================
+// COMPLETE TASK
+// =======================================
+
+
+async function completeTask(row){
+
+
+
+await updateTask(
+"completeTask",
+row
+);
+
+
+
+}
+
+
+
+
+
+
+
+// =======================================
+// UPDATE TASK API
+// =======================================
+
+
+async function updateTask(
+action,
+row
+){
+
+
+
+try{
+
+
+
+const response =
+await fetch(
+CONFIG.API_URL,
+{
+
+
+method:"POST",
+
+
+body:
+JSON.stringify({
+
+action:action,
+
+row:row,
+
+userId:
+USER.userId
+
+
+})
+
+
+}
+
+);
+
+
+
+const data =
+await response.json();
+
+
+
+if(data.success){
+
+
+alert(
+data.message
+);
+
+
+loadTasks();
+
+
+}
+
+
+else{
+
+
+alert(
+data.message
+);
+
+
+}
 
 
 
@@ -313,20 +731,15 @@ data.message ||
 catch(error){
 
 
-console.error(
-error
-);
-
+console.log(error);
 
 
 alert(
-"Server Connection Error"
+"Server Error"
 );
 
 
-
 }
-
 
 
 }
