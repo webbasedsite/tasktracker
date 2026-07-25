@@ -1,29 +1,42 @@
 // ==================================
 // Add New Task
+// Employee Own Task
 // ==================================
 
 async function addTask(){
 
 
     const taskName =
-    document.getElementById("newTaskName").value.trim();
+    document.getElementById("newTaskName")
+    .value
+    .trim();
+
+
+    const taskType =
+    document.getElementById("newTaskType")
+    .value;
 
 
     const startTime =
-    document.getElementById("newTaskStart").value;
+    document.getElementById("newTaskStart")
+    .value;
 
 
     const duration =
-    document.getElementById("newTaskDuration").value;
+    document.getElementById("newTaskDuration")
+    .value;
+
 
 
 
     if(!taskName || !startTime || !duration){
 
         alert("Please fill all fields");
+
         return;
 
     }
+
 
 
 
@@ -33,6 +46,18 @@ async function addTask(){
 
     const hub =
     localStorage.getItem("hub");
+
+
+
+    if(!userId){
+
+        alert("Session expired. Login again");
+
+        window.location.href="index.html";
+
+        return;
+
+    }
 
 
 
@@ -63,9 +88,13 @@ async function addTask(){
 
                 task:taskName,
 
+                type:taskType,
+
                 start:startTime,
 
-                duration:duration
+                duration:duration,
+
+                createdBy:userId
 
             })
 
@@ -74,8 +103,11 @@ async function addTask(){
 
 
 
+
+
         const data =
         await response.json();
+
 
 
 
@@ -87,28 +119,54 @@ async function addTask(){
 
 
 
-            // Close Modal
-
-            const modal =
-            bootstrap.Modal
-            .getInstance(
-            document.getElementById("addTaskModal")
+            const modalElement =
+            document.getElementById(
+                "addTaskModal"
             );
 
 
-            modal.hide();
+
+            const modal =
+            bootstrap.Modal.getInstance(
+                modalElement
+            );
 
 
 
-            // Clear Form
+            if(modal){
 
-            document.getElementById("newTaskName").value="";
-            document.getElementById("newTaskStart").value="";
-            document.getElementById("newTaskDuration").value="30";
+                modal.hide();
+
+            }
 
 
 
-            // Reload Tasks
+
+            document.getElementById(
+                "newTaskName"
+            ).value="";
+
+
+
+            document.getElementById(
+                "newTaskStart"
+            ).value="";
+
+
+
+            document.getElementById(
+                "newTaskDuration"
+            ).value="30";
+
+
+
+            document.getElementById(
+                "newTaskType"
+            ).value="Daily";
+
+
+
+
 
             loadTasks();
 
@@ -120,8 +178,8 @@ async function addTask(){
 
 
             alert(
-            data.message ||
-            "Task Add Failed"
+                data.message ||
+                "Task Add Failed"
             );
 
 
@@ -131,14 +189,14 @@ async function addTask(){
 
     }
 
-
     catch(error){
 
 
-        console.log(error);
+        console.error(error);
+
 
         alert(
-        "Server Connection Error"
+            "Server Connection Error"
         );
 
 
