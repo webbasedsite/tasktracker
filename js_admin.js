@@ -1,12 +1,14 @@
 // ==================================
 // Task Tracker
-// Admin Dashboard Script v3.1
-// Backend Connected
+// Admin Dashboard Script v3.2
+// Backend Connected FIXED
 // ==================================
 
 
 let ADMIN = null;
 let ALL_TASKS = [];
+
+
 
 
 // ==================================
@@ -20,6 +22,7 @@ document.addEventListener(
 checkAdmin();
 
 });
+
 
 
 
@@ -40,20 +43,32 @@ localStorage.getItem("taskUser")
 
 if(
 !ADMIN ||
-ADMIN.role.toUpperCase()!="ADMIN"
+String(ADMIN.role).toUpperCase()!="ADMIN"
 ){
+
 
 window.location.href="index.html";
 
 return;
 
+
 }
 
 
 
-document.getElementById("adminName")
-.innerHTML =
+const adminName =
+document.getElementById(
+"adminName"
+);
+
+
+if(adminName){
+
+adminName.innerHTML =
 ADMIN.name || "Admin";
+
+}
+
 
 
 loadDashboard();
@@ -69,7 +84,7 @@ loadTasks();
 
 
 // ==================================
-// API CALL COMMON FUNCTION
+// API CALL
 // ==================================
 
 async function apiCall(payload){
@@ -83,29 +98,30 @@ await fetch(
 CONFIG.API_URL,
 {
 
+
 method:"POST",
 
 headers:{
 "Content-Type":"application/json"
 },
 
+
 body:
 JSON.stringify(payload)
 
-});
+
+}
+
+);
 
 
-const data =
-await response.json();
 
+return await response.json();
 
-console.log("API Response:",data);
-
-
-return data;
 
 
 }
+
 catch(error){
 
 
@@ -116,13 +132,12 @@ return {
 
 success:false,
 
-message:error.message
+message:"Server Error"
 
 };
 
 
 }
-
 
 
 }
@@ -152,24 +167,53 @@ action:"dashboard"
 if(data.success){
 
 
-document.getElementById("totalAdminTask")
-.innerHTML=data.total;
+setText(
+"totalAdminTask",
+data.total
+);
 
 
-document.getElementById("adminCompleted")
-.innerHTML=data.completed;
+setText(
+"adminCompleted",
+data.completed
+);
 
 
-document.getElementById("adminRunning")
-.innerHTML=data.running;
+setText(
+"adminRunning",
+data.running
+);
 
 
-document.getElementById("adminPending")
-.innerHTML=data.pending;
+setText(
+"adminPending",
+data.pending
+);
 
 
 }
 
+
+
+}
+
+
+
+
+
+
+function setText(id,value){
+
+
+const el =
+document.getElementById(id);
+
+
+if(el){
+
+el.innerHTML=value || 0;
+
+}
 
 
 }
@@ -181,7 +225,7 @@ document.getElementById("adminPending")
 
 
 // ==================================
-// LOAD TASK
+// LOAD TASKS
 // ==================================
 
 async function loadTasks(){
@@ -200,23 +244,30 @@ if(data.success){
 
 
 ALL_TASKS =
-data.tasks;
+data.tasks || [];
 
 
 displayTasks();
 
-
 createHubReport();
-
 
 createEmployeeReport();
 
 
 }
+else{
 
+
+alert(
+data.message
+);
 
 
 }
+
+
+}
+
 
 
 
@@ -231,6 +282,7 @@ createEmployeeReport();
 function displayTasks(){
 
 
+
 const table =
 document.getElementById(
 "adminTaskTable"
@@ -238,7 +290,42 @@ document.getElementById(
 
 
 
+if(!table)
+return;
+
+
+
 table.innerHTML="";
+
+
+
+
+if(ALL_TASKS.length==0){
+
+
+table.innerHTML=
+`
+
+<tr>
+
+<td colspan="6"
+class="text-center">
+
+No Task Found
+
+</td>
+
+</tr>
+
+`;
+
+
+return;
+
+
+}
+
+
 
 
 
@@ -252,17 +339,16 @@ table.innerHTML +=
 
 <tr>
 
+
 <td>${index+1}</td>
 
 
-<td>
-${task.userId}
-</td>
+<td>${task.userId}</td>
 
 
 <td>
 
-${task.task}
+<b>${task.task}</b>
 
 <br>
 
@@ -273,21 +359,24 @@ ${task.type}
 </td>
 
 
-<td>
-${task.hub}
-</td>
+<td>${task.hub || "-"}</td>
 
 
 <td>
+
 ${badge(task.status)}
+
 </td>
+
 
 
 <td>
 
 
 <button
+
 class="btn btn-success btn-sm"
+
 onclick="changeStatus(${task.row},'Completed')">
 
 ✓
@@ -297,13 +386,14 @@ onclick="changeStatus(${task.row},'Completed')">
 
 
 <button
+
 class="btn btn-danger btn-sm"
+
 onclick="removeTask(${task.row})">
 
 🗑
 
 </button>
-
 
 
 </td>
@@ -328,29 +418,46 @@ onclick="removeTask(${task.row})">
 
 
 // ==================================
-// STATUS BADGE
+// BADGE
 // ==================================
 
 function badge(status){
 
 
-if(status=="Completed")
+switch(status){
 
-return `<span class="badge bg-success">
+
+case "Completed":
+
+return `
+<span class="badge bg-success">
 Completed
-</span>`;
+</span>
+`;
 
 
-if(status=="Running")
 
-return `<span class="badge bg-warning">
+case "Running":
+
+return `
+<span class="badge bg-warning text-dark">
 Running
-</span>`;
+</span>
+`;
 
 
-return `<span class="badge bg-secondary">
+
+default:
+
+return `
+<span class="badge bg-secondary">
 Pending
-</span>`;
+</span>
+`;
+
+
+
+}
 
 
 
@@ -373,32 +480,38 @@ async function createAdminTask(){
 
 
 const task =
-document.getElementById("adminTaskName")
-.value.trim();
+document.getElementById(
+"adminTaskName"
+).value.trim();
 
 
 
 const type =
-document.getElementById("adminTaskType")
-.value;
+document.getElementById(
+"adminTaskType"
+).value;
 
 
 
 const hub =
-document.getElementById("adminHub")
-.value;
+document.getElementById(
+"adminHub"
+).value;
 
 
 
 const start =
-document.getElementById("adminStart")
-.value;
+document.getElementById(
+"adminStart"
+).value;
 
 
 
 const duration =
-document.getElementById("adminDuration")
-.value;
+document.getElementById(
+"adminDuration"
+).value;
+
 
 
 
@@ -409,11 +522,17 @@ if(
 !duration
 ){
 
-alert("Fill all information");
+
+alert(
+"Fill all information"
+);
+
 
 return;
 
+
 }
+
 
 
 
@@ -423,6 +542,7 @@ const data =
 await apiCall({
 
 action:"adminAddTask",
+
 
 task:task,
 
@@ -434,10 +554,13 @@ start:start,
 
 duration:duration,
 
-createdBy:ADMIN.userId
+
+createdBy:
+ADMIN.userId
 
 
 });
+
 
 
 
@@ -452,8 +575,10 @@ alert(
 
 
 
-document.getElementById("adminTaskName")
-.value="";
+document.getElementById(
+"adminTaskName"
+).value="";
+
 
 
 loadTasks();
@@ -463,12 +588,12 @@ loadDashboard();
 
 
 }
+
 else{
 
 
 alert(
-data.message || 
-"Task Create Failed"
+data.message
 );
 
 
@@ -477,6 +602,7 @@ data.message ||
 
 
 }
+
 
 
 
@@ -519,8 +645,18 @@ loadDashboard();
 
 }
 
+else{
+
+
+alert(data.message);
+
 
 }
+
+
+
+}
+
 
 
 
@@ -536,11 +672,16 @@ loadDashboard();
 async function removeTask(row){
 
 
+
 if(
-!confirm("Delete Task?")
+!confirm(
+"Delete Task?"
 )
 
+)
 return;
+
+
 
 
 
@@ -555,6 +696,7 @@ row:row
 
 
 
+
 if(data.success){
 
 
@@ -564,10 +706,18 @@ loadDashboard();
 
 
 }
+else{
+
+
+alert(data.message);
+
+
+}
 
 
 
 }
+
 
 
 
@@ -583,8 +733,12 @@ loadDashboard();
 function createHubReport(){
 
 
+
 const table =
-document.getElementById("hubTable");
+document.getElementById(
+"hubTable"
+);
+
 
 
 if(!table)
@@ -593,6 +747,7 @@ return;
 
 
 table.innerHTML="";
+
 
 
 let hubs={};
@@ -639,6 +794,7 @@ hubs[t.hub].pending++;
 
 
 
+
 Object.keys(hubs)
 .forEach(h=>{
 
@@ -653,7 +809,9 @@ Math.round(
 
 
 
-table.innerHTML+=`
+table.innerHTML +=
+
+`
 
 <tr>
 
@@ -666,6 +824,7 @@ table.innerHTML+=`
 <td>${x.pending}</td>
 
 <td>${rate}%</td>
+
 
 </tr>
 
@@ -685,11 +844,13 @@ table.innerHTML+=`
 
 
 
+
 // ==================================
 // EMPLOYEE REPORT
 // ==================================
 
 function createEmployeeReport(){
+
 
 
 const table =
@@ -698,12 +859,15 @@ document.getElementById(
 );
 
 
+
 if(!table)
 return;
 
 
 
+
 table.innerHTML="";
+
 
 
 let emp={};
@@ -747,6 +911,8 @@ emp[t.userId].completed++;
 
 
 
+
+
 Object.keys(emp)
 .forEach(id=>{
 
@@ -761,7 +927,9 @@ Math.round(
 
 
 
-table.innerHTML+=`
+table.innerHTML +=
+
+`
 
 <tr>
 
@@ -798,9 +966,16 @@ table.innerHTML+=`
 // LOGOUT
 // ==================================
 
-document
-.getElementById("adminLogout")
-.onclick=function(){
+const logout =
+document.getElementById(
+"adminLogout"
+);
+
+
+if(logout){
+
+
+logout.onclick=function(){
 
 
 localStorage.removeItem(
@@ -808,7 +983,12 @@ localStorage.removeItem(
 );
 
 
-window.location.href="index.html";
+
+window.location.href=
+"index.html";
 
 
 };
+
+
+}
