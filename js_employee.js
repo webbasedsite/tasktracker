@@ -1,11 +1,11 @@
 // =======================================
 // Employee Dashboard JS
-// Task Tracker v3.0
+// Task Tracker v3.0 FIXED
 // =======================================
 
 
-
 let USER = null;
+
 
 
 
@@ -23,7 +23,10 @@ function(){
 checkSession();
 
 
+
 });
+
+
 
 
 
@@ -36,10 +39,12 @@ checkSession();
 function checkSession(){
 
 
+
 USER =
 JSON.parse(
 localStorage.getItem("taskUser")
 );
+
 
 
 
@@ -59,9 +64,7 @@ return;
 
 
 document
-.getElementById(
-"employeeName"
-)
+.getElementById("employeeName")
 .innerHTML =
 USER.name;
 
@@ -85,13 +88,10 @@ loadTasks();
 
 
 document
-.getElementById(
-"logoutBtn"
-)
+.getElementById("logoutBtn")
 .addEventListener(
 "click",
 function(){
-
 
 
 localStorage.removeItem(
@@ -113,6 +113,7 @@ window.location.href =
 
 
 
+
 // =======================================
 // LOAD TASKS
 // =======================================
@@ -121,9 +122,7 @@ window.location.href =
 async function loadTasks(){
 
 
-
 try{
-
 
 
 const response =
@@ -131,15 +130,12 @@ await fetch(
 CONFIG.API_URL,
 {
 
-
 method:"POST",
 
 
-body:
-JSON.stringify({
+body:JSON.stringify({
 
-action:
-"getTasks",
+action:"getTasks",
 
 userId:
 USER.userId
@@ -148,11 +144,9 @@ USER.userId
 })
 
 
-
 }
 
 );
-
 
 
 
@@ -172,16 +166,14 @@ data.tasks
 
 }
 
-
 else{
 
 
-alert(
-data.message
-);
+alert(data.message);
 
 
 }
+
 
 
 
@@ -210,6 +202,8 @@ alert(
 
 
 
+
+
 // =======================================
 // DISPLAY TASKS
 // =======================================
@@ -230,7 +224,6 @@ table.innerHTML="";
 
 
 
-
 let total=0;
 
 let completed=0;
@@ -240,8 +233,8 @@ let pending=0;
 
 
 
-if(tasks.length==0){
 
+if(!tasks || tasks.length==0){
 
 
 table.innerHTML=
@@ -286,11 +279,17 @@ total++;
 
 
 
-if(task.status=="Completed")
+if(task.status=="Completed"){
+
 completed++;
 
-else
+}
+
+else{
+
 pending++;
+
+}
 
 
 
@@ -301,19 +300,21 @@ let action="";
 
 
 
-
 if(task.status=="Pending"){
 
 
-action =
+
+action=
 `
 <button 
 class="btn btn-success btn-sm"
 onclick="startTask(${task.row})">
 
+
 <i class="fa fa-play"></i>
 
 Start
+
 
 </button>
 
@@ -325,10 +326,12 @@ Start
 
 
 
+
 else if(task.status=="Running"){
 
 
-action =
+
+action=
 `
 <button 
 class="btn btn-primary btn-sm"
@@ -353,7 +356,7 @@ Complete
 else{
 
 
-action =
+action=
 `
 <span class="badge bg-success">
 
@@ -373,29 +376,32 @@ Done
 
 table.innerHTML +=
 
-
 `
 <tr>
 
 
 <td>
+
 ${index+1}
+
 </td>
+
 
 
 <td>
 
-<b>
-${task.task}
-</b>
+<b>${task.task}</b>
 
 <br>
 
 <small>
+
 ${task.type}
+
 </small>
 
 </td>
+
 
 
 
@@ -411,11 +417,13 @@ ${task.duration} min
 
 
 
+
 <td>
 
 ${statusBadge(task.status)}
 
 </td>
+
 
 
 
@@ -426,11 +434,8 @@ ${action}
 </td>
 
 
-
 </tr>
-
 `;
-
 
 
 
@@ -440,21 +445,291 @@ ${action}
 
 
 
-
-
 updateSummary(
-
 total,
-
 completed,
-
 pending
-
 );
 
 
 
 }
+
+
+
+
+
+
+
+
+
+// =======================================
+// ADD TASK
+// =======================================
+
+
+async function addTask(){
+
+
+
+const task =
+document
+.getElementById("newTaskName")
+.value
+.trim();
+
+
+
+
+const type =
+document
+.getElementById("newTaskType")
+.value;
+
+
+
+
+const start =
+document
+.getElementById("newTaskStart")
+.value;
+
+
+
+
+const duration =
+document
+.getElementById("newTaskDuration")
+.value;
+
+
+
+
+
+
+if(
+!task ||
+!start ||
+!duration
+){
+
+
+alert(
+"Please Fill All Information"
+);
+
+
+return;
+
+
+}
+
+
+
+
+
+
+const payload = {
+
+
+action:"addTask",
+
+
+userId:
+USER.userId,
+
+
+task:task,
+
+
+type:type,
+
+
+start:start,
+
+
+duration:duration,
+
+
+createdBy:
+USER.userId
+
+
+
+};
+
+
+
+
+
+
+try{
+
+
+
+const response =
+await fetch(
+CONFIG.API_URL,
+{
+
+method:"POST",
+
+
+body:
+JSON.stringify(payload)
+
+
+}
+
+);
+
+
+
+
+
+
+const data =
+await response.json();
+
+
+
+
+
+if(data.success){
+
+
+
+alert(
+data.message
+);
+
+
+
+
+clearTaskForm();
+
+
+
+closeTaskModal();
+
+
+
+loadTasks();
+
+
+
+}
+
+else{
+
+
+alert(
+data.message
+);
+
+
+}
+
+
+
+}
+
+catch(error){
+
+
+console.log(error);
+
+
+alert(
+"Server Error"
+);
+
+
+}
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// =======================================
+// CLEAR TASK FORM
+// =======================================
+
+
+function clearTaskForm(){
+
+
+
+document
+.getElementById("newTaskName")
+.value="";
+
+
+
+document
+.getElementById("newTaskStart")
+.value="";
+
+
+
+document
+.getElementById("newTaskDuration")
+.value="30";
+
+
+
+}
+
+
+
+
+
+
+
+
+// =======================================
+// CLOSE MODAL
+// =======================================
+
+
+function closeTaskModal(){
+
+
+
+const modal =
+document.getElementById(
+"addTaskModal"
+);
+
+
+
+const instance =
+bootstrap.Modal
+.getInstance(modal);
+
+
+
+if(instance){
+
+
+instance.hide();
+
+
+}
+
+
+
+}
+
+
 
 
 
@@ -475,41 +750,51 @@ if(status=="Completed"){
 
 
 return `
+
 <span class="badge bg-success">
 
 Completed
 
 </span>
+
 `;
 
 }
+
 
 
 if(status=="Running"){
 
 
 return `
+
 <span class="badge bg-warning text-dark">
 
 Running
 
 </span>
+
 `;
 
 }
 
 
+
 return `
+
 <span class="badge bg-secondary">
 
 Pending
 
 </span>
+
 `;
 
 
 
 }
+
+
 
 
 
@@ -531,27 +816,23 @@ pending
 
 
 document
-.getElementById(
-"totalTask"
-)
+.getElementById("totalTask")
 .innerHTML =
 total;
 
 
 
+
 document
-.getElementById(
-"completedTask"
-)
+.getElementById("completedTask")
 .innerHTML =
 completed;
 
 
 
+
 document
-.getElementById(
-"pendingTask"
-)
+.getElementById("pendingTask")
 .innerHTML =
 pending;
 
@@ -576,25 +857,25 @@ Math.round(
 
 
 
+
 document
-.getElementById(
-"progressText"
-)
+.getElementById("progressText")
 .innerHTML =
 percent+"%";
 
 
 
+
 document
-.getElementById(
-"progressBar"
-)
+.getElementById("progressBar")
 .style.width =
 percent+"%";
 
 
 
 }
+
+
 
 
 
@@ -650,8 +931,10 @@ row
 
 
 
+
+
 // =======================================
-// UPDATE TASK API
+// UPDATE TASK
 // =======================================
 
 
@@ -663,7 +946,6 @@ row
 
 
 try{
-
 
 
 const response =
@@ -700,6 +982,7 @@ await response.json();
 
 
 
+
 if(data.success){
 
 
@@ -712,7 +995,6 @@ loadTasks();
 
 
 }
-
 
 else{
 
@@ -740,6 +1022,7 @@ alert(
 
 
 }
+
 
 
 }
