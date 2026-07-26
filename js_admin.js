@@ -1,27 +1,21 @@
 // ==================================
 // Task Tracker
-// Admin Dashboard Script v3.0
+// Admin Dashboard Script v3.1
 // Backend Connected
 // ==================================
 
 
-
 let ADMIN = null;
-
 let ALL_TASKS = [];
-
-
 
 
 // ==================================
 // PAGE LOAD
 // ==================================
 
-
 document.addEventListener(
 "DOMContentLoaded",
 ()=>{
-
 
 checkAdmin();
 
@@ -30,15 +24,11 @@ checkAdmin();
 
 
 
-
-
 // ==================================
 // ADMIN CHECK
 // ==================================
 
-
 function checkAdmin(){
-
 
 
 ADMIN =
@@ -50,28 +40,20 @@ localStorage.getItem("taskUser")
 
 if(
 !ADMIN ||
-ADMIN.role.toUpperCase()
-!="ADMIN"
+ADMIN.role.toUpperCase()!="ADMIN"
 ){
 
-
-window.location.href =
-"index.html";
-
+window.location.href="index.html";
 
 return;
-
 
 }
 
 
 
-
-document
-.getElementById("adminName")
+document.getElementById("adminName")
 .innerHTML =
 ADMIN.name || "Admin";
-
 
 
 loadDashboard();
@@ -79,8 +61,73 @@ loadDashboard();
 loadTasks();
 
 
+}
+
+
+
+
+
+
+// ==================================
+// API CALL COMMON FUNCTION
+// ==================================
+
+async function apiCall(payload){
+
+
+try{
+
+
+const response =
+await fetch(
+CONFIG.API_URL,
+{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:
+JSON.stringify(payload)
+
+});
+
+
+const data =
+await response.json();
+
+
+console.log("API Response:",data);
+
+
+return data;
+
 
 }
+catch(error){
+
+
+console.error(error);
+
+
+return {
+
+success:false,
+
+message:error.message
+
+};
+
+
+}
+
+
+
+}
+
+
 
 
 
@@ -90,84 +137,36 @@ loadTasks();
 // DASHBOARD
 // ==================================
 
-
 async function loadDashboard(){
 
 
-
-try{
-
-
-const response =
-await fetch(
-CONFIG.API_URL,
-{
-
-
-method:"POST",
-
-
-body:JSON.stringify({
+const data =
+await apiCall({
 
 action:"dashboard"
 
-
-})
-
-
-}
-
-);
-
-
-
-const data =
-await response.json();
-
-
+});
 
 
 
 if(data.success){
 
 
-
-document
-.getElementById("totalAdminTask")
-.innerHTML =
-data.total;
+document.getElementById("totalAdminTask")
+.innerHTML=data.total;
 
 
-
-document
-.getElementById("adminCompleted")
-.innerHTML =
-data.completed;
+document.getElementById("adminCompleted")
+.innerHTML=data.completed;
 
 
-
-document
-.getElementById("adminRunning")
-.innerHTML =
-data.running;
+document.getElementById("adminRunning")
+.innerHTML=data.running;
 
 
+document.getElementById("adminPending")
+.innerHTML=data.pending;
 
-document
-.getElementById("adminPending")
-.innerHTML =
-data.pending;
-
-
-
-}
-
-
-}
-
-catch(error){
-
-console.log(error);
 
 }
 
@@ -182,43 +181,18 @@ console.log(error);
 
 
 // ==================================
-// LOAD ALL TASK
+// LOAD TASK
 // ==================================
-
 
 async function loadTasks(){
 
 
-
-try{
-
-
-const response =
-await fetch(
-CONFIG.API_URL,
-{
-
-
-method:"POST",
-
-
-body:JSON.stringify({
+const data =
+await apiCall({
 
 action:"getAllTasks"
 
-
-})
-
-
-}
-
-);
-
-
-
-const data =
-await response.json();
-
+});
 
 
 
@@ -245,31 +219,16 @@ createEmployeeReport();
 }
 
 
-catch(error){
-
-
-console.log(error);
-
-
-}
-
-
-
-}
-
-
 
 
 
 
 
 // ==================================
-// TASK TABLE
+// DISPLAY TASK
 // ==================================
-
 
 function displayTasks(){
-
 
 
 const table =
@@ -283,30 +242,22 @@ table.innerHTML="";
 
 
 
-
-
 ALL_TASKS.forEach(
 (task,index)=>{
 
 
 table.innerHTML +=
 
-
 `
+
 <tr>
 
-
-<td>
-${index+1}
-</td>
+<td>${index+1}</td>
 
 
 <td>
-
 ${task.userId}
-
 </td>
-
 
 
 <td>
@@ -322,33 +273,21 @@ ${task.type}
 </td>
 
 
-
-
 <td>
-
 ${task.hub}
-
 </td>
-
-
 
 
 <td>
-
 ${badge(task.status)}
-
 </td>
-
-
 
 
 <td>
 
 
 <button
-
 class="btn btn-success btn-sm"
-
 onclick="changeStatus(${task.row},'Completed')">
 
 ✓
@@ -358,14 +297,13 @@ onclick="changeStatus(${task.row},'Completed')">
 
 
 <button
-
 class="btn btn-danger btn-sm"
-
 onclick="removeTask(${task.row})">
 
-<i class="fa fa-trash"></i>
+🗑
 
 </button>
+
 
 
 </td>
@@ -393,42 +331,32 @@ onclick="removeTask(${task.row})">
 // STATUS BADGE
 // ==================================
 
-
 function badge(status){
 
 
+if(status=="Completed")
 
-if(status=="Completed"){
-
-return `
-<span class="badge bg-success">
+return `<span class="badge bg-success">
 Completed
-</span>
-`;
-
-}
+</span>`;
 
 
-if(status=="Running"){
+if(status=="Running")
 
-return `
-<span class="badge bg-warning text-dark">
+return `<span class="badge bg-warning">
 Running
-</span>
-`;
-
-}
+</span>`;
 
 
-return `
-<span class="badge bg-secondary">
+return `<span class="badge bg-secondary">
 Pending
-</span>
-`;
+</span>`;
 
 
 
 }
+
+
 
 
 
@@ -440,45 +368,37 @@ Pending
 // CREATE ADMIN TASK
 // ==================================
 
-
 async function createAdminTask(){
 
 
 
 const task =
-document
-.getElementById("adminTaskName")
-.value;
+document.getElementById("adminTaskName")
+.value.trim();
 
 
 
 const type =
-document
-.getElementById("adminTaskType")
+document.getElementById("adminTaskType")
 .value;
 
 
 
 const hub =
-document
-.getElementById("adminHub")
+document.getElementById("adminHub")
 .value;
 
 
 
 const start =
-document
-.getElementById("adminStart")
+document.getElementById("adminStart")
 .value;
 
 
 
 const duration =
-document
-.getElementById("adminDuration")
+document.getElementById("adminDuration")
 .value;
-
-
 
 
 
@@ -489,30 +409,18 @@ if(
 !duration
 ){
 
-
-alert(
-"Fill all information"
-);
-
+alert("Fill all information");
 
 return;
-
 
 }
 
 
 
 
-const response =
-await fetch(
-CONFIG.API_URL,
-{
 
-
-method:"POST",
-
-
-body:JSON.stringify({
+const data =
+await apiCall({
 
 action:"adminAddTask",
 
@@ -529,25 +437,13 @@ duration:duration,
 createdBy:ADMIN.userId
 
 
-})
+});
 
-
-}
-
-);
-
-
-
-
-
-const data =
-await response.json();
 
 
 
 
 if(data.success){
-
 
 
 alert(
@@ -556,17 +452,23 @@ alert(
 
 
 
-location.reload();
+document.getElementById("adminTaskName")
+.value="";
+
+
+loadTasks();
+
+loadDashboard();
 
 
 
 }
-
 else{
 
 
 alert(
-data.message
+data.message || 
+"Task Create Failed"
 );
 
 
@@ -575,6 +477,7 @@ data.message
 
 
 }
+
 
 
 
@@ -586,47 +489,23 @@ data.message
 // UPDATE STATUS
 // ==================================
 
-
 async function changeStatus(
 row,
 status
 ){
 
 
+const data =
+await apiCall({
 
-const response =
-await fetch(
-CONFIG.API_URL,
-{
-
-
-method:"POST",
-
-
-body:JSON.stringify({
-
-
-action:
-"updateTaskStatus",
-
+action:"updateTaskStatus",
 
 row:row,
-
 
 status:status
 
 
-})
-
-
-}
-
-);
-
-
-
-const data =
-await response.json();
+});
 
 
 
@@ -635,15 +514,14 @@ if(data.success){
 
 loadTasks();
 
-
 loadDashboard();
 
 
 }
 
 
-
 }
+
 
 
 
@@ -655,51 +533,25 @@ loadDashboard();
 // DELETE TASK
 // ==================================
 
-
 async function removeTask(row){
 
 
-
 if(
-!confirm(
-"Delete Task?"
+!confirm("Delete Task?")
 )
 
-)return;
+return;
 
 
 
-
-
-const response =
-await fetch(
-CONFIG.API_URL,
-{
-
-
-method:"POST",
-
-
-body:JSON.stringify({
+const data =
+await apiCall({
 
 action:"deleteTask",
 
 row:row
 
-
-})
-
-
-}
-
-);
-
-
-
-
-
-const data =
-await response.json();
+});
 
 
 
@@ -707,7 +559,6 @@ if(data.success){
 
 
 loadTasks();
-
 
 loadDashboard();
 
@@ -724,28 +575,27 @@ loadDashboard();
 
 
 
+
 // ==================================
 // HUB REPORT
 // ==================================
 
-
 function createHubReport(){
 
 
-
 const table =
-document.getElementById(
-"hubTable"
-);
+document.getElementById("hubTable");
+
+
+if(!table)
+return;
 
 
 
 table.innerHTML="";
 
 
-
 let hubs={};
-
 
 
 
@@ -778,7 +628,6 @@ if(t.status=="Completed")
 
 hubs[t.hub].completed++;
 
-
 else
 
 hubs[t.hub].pending++;
@@ -790,45 +639,41 @@ hubs[t.hub].pending++;
 
 
 
-
 Object.keys(hubs)
-.forEach(hub=>{
+.forEach(h=>{
 
 
-let h =
-hubs[hub];
+let x=hubs[h];
 
 
-let rate =
+let rate=
 Math.round(
-(h.completed/h.total)*100
+(x.completed/x.total)*100
 );
 
 
 
-table.innerHTML +=
+table.innerHTML+=`
 
-
-`
 <tr>
 
-<td>${hub}</td>
+<td>${h}</td>
 
-<td>${h.total}</td>
+<td>${x.total}</td>
 
-<td>${h.completed}</td>
+<td>${x.completed}</td>
 
-<td>${h.pending}</td>
+<td>${x.pending}</td>
 
 <td>${rate}%</td>
 
 </tr>
+
 `;
 
 
 
 });
-
 
 
 }
@@ -844,9 +689,7 @@ table.innerHTML +=
 // EMPLOYEE REPORT
 // ==================================
 
-
 function createEmployeeReport(){
-
 
 
 const table =
@@ -855,14 +698,15 @@ document.getElementById(
 );
 
 
+if(!table)
+return;
+
+
 
 table.innerHTML="";
 
 
-
 let emp={};
-
-
 
 
 
@@ -886,6 +730,7 @@ hub:t.hub
 }
 
 
+
 emp[t.userId].total++;
 
 
@@ -906,21 +751,18 @@ Object.keys(emp)
 .forEach(id=>{
 
 
-let e =
-emp[id];
+let e=emp[id];
 
 
-let score =
+let score=
 Math.round(
 (e.completed/e.total)*100
 );
 
 
 
-table.innerHTML +=
+table.innerHTML+=`
 
-
-`
 <tr>
 
 <td>${id}</td>
@@ -943,8 +785,9 @@ table.innerHTML +=
 });
 
 
-
 }
+
+
 
 
 
@@ -955,11 +798,8 @@ table.innerHTML +=
 // LOGOUT
 // ==================================
 
-
 document
-.getElementById(
-"adminLogout"
-)
+.getElementById("adminLogout")
 .onclick=function(){
 
 
@@ -968,9 +808,7 @@ localStorage.removeItem(
 );
 
 
-
-window.location.href=
-"index.html";
+window.location.href="index.html";
 
 
 };
