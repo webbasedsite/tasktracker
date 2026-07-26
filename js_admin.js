@@ -1,7 +1,7 @@
 // ==================================
 // Task Tracker
-// Admin Dashboard Script v3.2
-// Backend Connected FIXED
+// Admin Dashboard Script v3.3
+// Backend Connected + Auto Refresh
 // ==================================
 
 
@@ -27,6 +27,7 @@ checkAdmin();
 
 
 
+
 // ==================================
 // ADMIN CHECK
 // ==================================
@@ -43,7 +44,8 @@ localStorage.getItem("taskUser")
 
 if(
 !ADMIN ||
-String(ADMIN.role).toUpperCase()!="ADMIN"
+String(ADMIN.role || "")
+.toUpperCase() !== "ADMIN"
 ){
 
 
@@ -51,20 +53,19 @@ window.location.href="index.html";
 
 return;
 
-
 }
 
 
 
-const adminName =
+const nameBox =
 document.getElementById(
 "adminName"
 );
 
 
-if(adminName){
+if(nameBox){
 
-adminName.innerHTML =
+nameBox.innerHTML =
 ADMIN.name || "Admin";
 
 }
@@ -76,7 +77,10 @@ loadDashboard();
 loadTasks();
 
 
+
 }
+
+
 
 
 
@@ -102,7 +106,10 @@ CONFIG.API_URL,
 method:"POST",
 
 headers:{
-"Content-Type":"application/json"
+
+"Content-Type":
+"application/json"
+
 },
 
 
@@ -128,11 +135,12 @@ catch(error){
 console.error(error);
 
 
-return {
+return{
 
 success:false,
 
-message:"Server Error"
+message:
+"Server Error"
 
 };
 
@@ -140,7 +148,10 @@ message:"Server Error"
 }
 
 
+
 }
+
+
 
 
 
@@ -153,6 +164,7 @@ message:"Server Error"
 // ==================================
 
 async function loadDashboard(){
+
 
 
 const data =
@@ -191,11 +203,12 @@ data.pending
 );
 
 
-}
-
-
 
 }
+
+
+}
+
 
 
 
@@ -209,14 +222,19 @@ const el =
 document.getElementById(id);
 
 
+
 if(el){
 
-el.innerHTML=value || 0;
+el.innerHTML =
+value || 0;
 
 }
 
 
+
 }
+
+
 
 
 
@@ -229,6 +247,7 @@ el.innerHTML=value || 0;
 // ==================================
 
 async function loadTasks(){
+
 
 
 const data =
@@ -247,6 +266,7 @@ ALL_TASKS =
 data.tasks || [];
 
 
+
 displayTasks();
 
 createHubReport();
@@ -254,7 +274,9 @@ createHubReport();
 createEmployeeReport();
 
 
+
 }
+
 else{
 
 
@@ -266,6 +288,7 @@ data.message
 }
 
 
+
 }
 
 
@@ -275,8 +298,9 @@ data.message
 
 
 
+
 // ==================================
-// DISPLAY TASK
+// DISPLAY TASKS
 // ==================================
 
 function displayTasks(){
@@ -295,12 +319,15 @@ return;
 
 
 
+
 table.innerHTML="";
 
 
 
 
-if(ALL_TASKS.length==0){
+if(
+ALL_TASKS.length===0
+){
 
 
 table.innerHTML=
@@ -329,8 +356,11 @@ return;
 
 
 
+
+
 ALL_TASKS.forEach(
 (task,index)=>{
+
 
 
 table.innerHTML +=
@@ -340,26 +370,53 @@ table.innerHTML +=
 <tr>
 
 
-<td>${index+1}</td>
-
-
-<td>${task.userId}</td>
-
-
 <td>
 
-<b>${task.task}</b>
-
-<br>
-
-<small>
-${task.type}
-</small>
+${index+1}
 
 </td>
 
 
-<td>${task.hub || "-"}</td>
+
+<td>
+
+${task.userId}
+
+</td>
+
+
+
+<td>
+
+<b>
+
+${task.task}
+
+</b>
+
+
+<br>
+
+
+<small>
+
+${task.type}
+
+</small>
+
+
+</td>
+
+
+
+
+<td>
+
+${task.hub || "-"}
+
+</td>
+
+
 
 
 <td>
@@ -367,6 +424,7 @@ ${task.type}
 ${badge(task.status)}
 
 </td>
+
 
 
 
@@ -385,6 +443,7 @@ onclick="changeStatus(${task.row},'Completed')">
 
 
 
+
 <button
 
 class="btn btn-danger btn-sm"
@@ -394,6 +453,7 @@ onclick="removeTask(${task.row})">
 🗑
 
 </button>
+
 
 
 </td>
@@ -409,6 +469,7 @@ onclick="removeTask(${task.row})">
 
 
 
+
 }
 
 
@@ -417,47 +478,63 @@ onclick="removeTask(${task.row})">
 
 
 
+
+
 // ==================================
-// BADGE
+// STATUS BADGE
 // ==================================
 
 function badge(status){
 
 
-switch(status){
 
+if(status==="Completed"){
 
-case "Completed":
 
 return `
+
 <span class="badge bg-success">
+
 Completed
+
 </span>
-`;
 
-
-
-case "Running":
-
-return `
-<span class="badge bg-warning text-dark">
-Running
-</span>
-`;
-
-
-
-default:
-
-return `
-<span class="badge bg-secondary">
-Pending
-</span>
 `;
 
 
 
 }
+
+
+
+if(status==="Running"){
+
+
+return `
+
+<span class="badge bg-warning text-dark">
+
+Running
+
+</span>
+
+`;
+
+
+
+}
+
+
+
+return `
+
+<span class="badge bg-secondary">
+
+Pending
+
+</span>
+
+`;
 
 
 
@@ -482,35 +559,42 @@ async function createAdminTask(){
 const task =
 document.getElementById(
 "adminTaskName"
-).value.trim();
+)
+.value
+.trim();
 
 
 
 const type =
 document.getElementById(
 "adminTaskType"
-).value;
+)
+.value;
 
 
 
 const hub =
 document.getElementById(
 "adminHub"
-).value;
+)
+.value;
 
 
 
 const start =
 document.getElementById(
 "adminStart"
-).value;
+)
+.value;
 
 
 
 const duration =
 document.getElementById(
 "adminDuration"
-).value;
+)
+.value;
+
 
 
 
@@ -541,16 +625,21 @@ return;
 const data =
 await apiCall({
 
-action:"adminAddTask",
+action:
+"adminAddTask",
 
 
 task:task,
 
+
 type:type,
+
 
 hub:hub,
 
+
 start:start,
+
 
 duration:duration,
 
@@ -565,7 +654,6 @@ ADMIN.userId
 
 
 
-
 if(data.success){
 
 
@@ -575,15 +663,7 @@ alert(
 
 
 
-document.getElementById(
-"adminTaskName"
-).value="";
-
-
-
-loadTasks();
-
-loadDashboard();
+location.reload();
 
 
 
@@ -621,12 +701,16 @@ status
 ){
 
 
+
 const data =
 await apiCall({
 
-action:"updateTaskStatus",
+action:
+"updateTaskStatus",
+
 
 row:row,
+
 
 status:status
 
@@ -635,12 +719,14 @@ status:status
 
 
 
+
+
 if(data.success){
 
 
-loadTasks();
 
-loadDashboard();
+location.reload();
+
 
 
 }
@@ -648,7 +734,9 @@ loadDashboard();
 else{
 
 
-alert(data.message);
+alert(
+data.message
+);
 
 
 }
@@ -679,7 +767,10 @@ if(
 )
 
 )
+
 return;
+
+
 
 
 
@@ -688,11 +779,16 @@ return;
 const data =
 await apiCall({
 
-action:"deleteTask",
+action:
+"deleteTask",
+
 
 row:row
 
+
 });
+
+
 
 
 
@@ -700,16 +796,19 @@ row:row
 if(data.success){
 
 
-loadTasks();
+location.reload();
 
-loadDashboard();
 
 
 }
+
 else{
 
 
-alert(data.message);
+alert(
+data.message
+);
+
 
 
 }
@@ -754,13 +853,20 @@ let hubs={};
 
 
 
+
 ALL_TASKS.forEach(t=>{
 
 
-if(!hubs[t.hub]){
+
+let hub =
+t.hub || "Unknown";
 
 
-hubs[t.hub]={
+
+if(!hubs[hub]){
+
+
+hubs[hub]={
 
 total:0,
 
@@ -775,17 +881,19 @@ pending:0
 
 
 
-hubs[t.hub].total++;
+hubs[hub].total++;
 
 
 
-if(t.status=="Completed")
+if(
+t.status==="Completed"
+)
 
-hubs[t.hub].completed++;
+hubs[hub].completed++;
 
 else
 
-hubs[t.hub].pending++;
+hubs[hub].pending++;
 
 
 
@@ -795,17 +903,28 @@ hubs[t.hub].pending++;
 
 
 
+
+
 Object.keys(hubs)
 .forEach(h=>{
 
 
-let x=hubs[h];
+
+let x =
+hubs[h];
 
 
-let rate=
+
+let rate =
+x.total
+?
 Math.round(
 (x.completed/x.total)*100
-);
+)
+:
+0;
+
+
 
 
 
@@ -833,6 +952,7 @@ table.innerHTML +=
 
 
 });
+
 
 
 }
@@ -874,7 +994,9 @@ let emp={};
 
 
 
+
 ALL_TASKS.forEach(t=>{
+
 
 
 if(!emp[t.userId]){
@@ -886,7 +1008,7 @@ total:0,
 
 completed:0,
 
-hub:t.hub
+hub:t.hub || "-"
 
 };
 
@@ -899,7 +1021,9 @@ emp[t.userId].total++;
 
 
 
-if(t.status=="Completed")
+if(
+t.status==="Completed"
+)
 
 emp[t.userId].completed++;
 
@@ -913,17 +1037,27 @@ emp[t.userId].completed++;
 
 
 
+
 Object.keys(emp)
 .forEach(id=>{
 
 
-let e=emp[id];
+
+let e =
+emp[id];
 
 
-let score=
+
+let score =
+e.total
+?
 Math.round(
 (e.completed/e.total)*100
-);
+)
+:
+0;
+
+
 
 
 
@@ -933,13 +1067,18 @@ table.innerHTML +=
 
 <tr>
 
+
 <td>${id}</td>
+
 
 <td>${e.hub}</td>
 
+
 <td>${e.total}</td>
 
+
 <td>${e.completed}</td>
+
 
 <td>${score}%</td>
 
@@ -953,7 +1092,9 @@ table.innerHTML +=
 });
 
 
+
 }
+
 
 
 
@@ -972,6 +1113,7 @@ document.getElementById(
 );
 
 
+
 if(logout){
 
 
@@ -984,8 +1126,9 @@ localStorage.removeItem(
 
 
 
-window.location.href=
+window.location.href =
 "index.html";
+
 
 
 };
