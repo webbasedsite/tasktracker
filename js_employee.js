@@ -890,14 +890,12 @@ percent+"%";
 
 async function startTask(row){
 
-
-
 await updateTask(
 "startTask",
 row
 );
 
-
+location.reload();
 
 }
 
@@ -914,14 +912,12 @@ row
 
 async function completeTask(row){
 
-
-
 await updateTask(
 "completeTask",
 row
 );
 
-
+location.reload();
 
 }
 
@@ -985,10 +981,11 @@ await response.json();
 
 if(data.success){
 
+alert(data.message);
 
-alert(
-data.message
-);
+location.reload();
+
+}
 
 
 loadTasks();
