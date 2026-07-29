@@ -1,0 +1,565 @@
+/* ==================================
+   Task Tracker Admin Dashboard CSS v3.0
+================================== */
+
+
+*{
+
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+
+}
+
+
+
+body{
+
+background:#f4f7fb;
+
+}
+
+
+
+
+
+/* ===============================
+Navbar
+=============================== */
+
+
+.navbar{
+
+height:70px;
+
+}
+
+
+
+.navbar h4{
+
+color:#1f2937;
+font-size:22px;
+
+}
+
+
+
+.navbar span{
+
+font-size:14px;
+
+}
+
+
+
+
+
+/* ===============================
+Common Card
+=============================== */
+
+
+.card{
+
+border:none;
+
+border-radius:18px;
+
+box-shadow:
+0 8px 25px rgba(0,0,0,.06);
+
+overflow:hidden;
+
+}
+
+
+
+
+
+/* ===============================
+Summary Cards
+=============================== */
+
+
+.admin-card{
+
+color:white;
+
+transition:.3s;
+
+}
+
+
+
+.admin-card:hover{
+
+transform:
+translateY(-5px);
+
+box-shadow:
+0 12px 30px rgba(0,0,0,.12);
+
+}
+
+
+
+.admin-card .card-body{
+
+padding:25px;
+
+}
+
+
+
+.admin-card h6{
+
+font-size:14px;
+
+opacity:.9;
+
+}
+
+
+
+.admin-card h2{
+
+font-size:36px;
+
+font-weight:700;
+
+margin-top:10px;
+
+}
+
+
+
+
+
+/* ===============================
+Colors
+=============================== */
+
+
+.blue{
+
+background:
+linear-gradient(
+135deg,
+#2563eb,
+#3b82f6
+);
+
+}
+
+
+
+.green{
+
+background:
+linear-gradient(
+135deg,
+#16a34a,
+#22c55e
+);
+
+}
+
+
+
+.orange{
+
+background:
+linear-gradient(
+135deg,
+#f59e0b,
+#fbbf24
+);
+
+}
+
+
+
+.red{
+
+background:
+linear-gradient(
+135deg,
+#dc2626,
+#ef4444
+);
+
+}
+
+
+
+
+
+
+
+/* ===============================
+Card Header
+=============================== */
+
+
+.card-header{
+
+background:white;
+
+border:none;
+
+padding:18px 22px;
+
+font-weight:600;
+
+}
+
+
+
+
+
+.card-header h5{
+
+font-size:18px;
+
+color:#1f2937;
+
+}
+
+
+
+
+
+
+
+/* ===============================
+Create Button
+=============================== */
+
+
+.btn-primary{
+
+
+border-radius:10px;
+
+padding:
+10px 18px;
+
+font-weight:500;
+
+}
+
+
+
+
+
+
+
+/* ===============================
+Tables
+=============================== */
+
+
+.table{
+
+margin-bottom:0;
+
+}
+
+
+
+.table-responsive{
+
+border-radius:18px;
+
+}
+
+
+
+
+.table thead{
+
+
+background:#2563eb;
+
+color:white;
+
+}
+
+
+
+.table thead th{
+
+
+padding:15px;
+
+font-size:14px;
+
+border:none;
+
+}
+
+
+
+
+.table tbody td{
+
+
+padding:15px;
+
+font-size:14px;
+
+vertical-align:middle;
+
+}
+
+
+
+.table tbody tr:hover{
+
+
+background:#f8fbff;
+
+
+}
+
+
+
+
+
+/* ===============================
+Status
+=============================== */
+
+
+.badge{
+
+padding:
+7px 12px;
+
+border-radius:20px;
+
+font-size:12px;
+
+}
+
+
+
+
+
+
+/* ===============================
+Score
+=============================== */
+
+
+.score{
+
+
+background:#dcfce7;
+
+color:#15803d;
+
+padding:
+6px 12px;
+
+border-radius:20px;
+
+font-weight:600;
+
+font-size:13px;
+
+
+}
+
+
+
+
+
+/* ===============================
+Modal
+=============================== */
+
+
+.modal-content{
+
+
+border:none;
+
+border-radius:18px;
+
+box-shadow:
+0 15px 40px rgba(0,0,0,.15);
+
+
+}
+
+
+
+.modal-header{
+
+
+border:none;
+
+padding:20px;
+
+}
+
+
+
+.modal-body{
+
+
+padding:25px;
+
+}
+
+
+
+.modal-footer{
+
+
+border:none;
+
+padding:20px;
+
+}
+
+
+
+
+
+.form-control,
+.form-select{
+
+
+border-radius:10px;
+
+padding:12px;
+
+
+}
+
+
+
+
+
+/* ===============================
+Activity
+=============================== */
+
+
+.list-group-item{
+
+
+padding:18px 22px;
+
+border:none;
+
+border-bottom:
+1px solid #eee;
+
+}
+
+
+
+.list-group-item:last-child{
+
+
+border-bottom:none;
+
+
+}
+
+
+
+
+
+/* ===============================
+Logout
+=============================== */
+
+
+#adminLogout{
+
+
+border-radius:8px;
+
+}
+
+
+
+
+
+
+
+/* ===============================
+Mobile Responsive
+=============================== */
+
+
+@media(max-width:768px){
+
+
+
+.navbar{
+
+height:auto;
+
+padding:15px;
+
+}
+
+
+
+.navbar h4{
+
+
+font-size:18px;
+
+}
+
+
+
+.admin-card h2{
+
+
+font-size:28px;
+
+
+}
+
+
+
+.table{
+
+
+font-size:13px;
+
+
+}
+
+
+
+.card-header h5{
+
+
+font-size:16px;
+
+
+}
+
+
+
+.btn-primary{
+
+
+font-size:13px;
+
+
+}
+
+
+
+}
