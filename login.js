@@ -29,19 +29,15 @@ async function login() {
 
     try {
 
-        const response = await fetch(CONFIG.API_URL, {
-            method: "POST",
-            body: JSON.stringify({
-                action: "login",
-                userId: userId
-            })
-        });
+        const response = await fetch(CONFIG.API_URL,{
+    method:"POST",
+    body:JSON.stringify({
+        action:"login",
+        userId:userId
+    })
+});
 
-        if (!response.ok) {
-            throw new Error("HTTP " + response.status);
-        }
-
-        const data = await response.json();
+const data = await response.json();
 
         btnText.innerHTML = `
             <i class="fa-solid fa-right-to-bracket me-2"></i>
